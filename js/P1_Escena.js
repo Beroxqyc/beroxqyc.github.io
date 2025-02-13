@@ -23,7 +23,7 @@ let renderer, scene, camera;
 /*******************
  * TO DO: Variables globales de la aplicacion
  *******************/
-let esferaCubo;
+let pentagon;
 let angulo = 0;
 
 // Acciones
@@ -53,9 +53,16 @@ function init()
 
 function loadScene()
 {
-    const material = new THREE.MeshNormalMaterial( );
+    const material = new THREE.MeshBasicMaterial({
+        color: 0x00ff00,
+        transparent: true,
+        opacity: 0.2
+    });
     
-    const geoPenrtagon = new THREE.PolyhedronGeometry();
+    const radius = 3;
+    const vertices = [];
+    
+
 
     /*******************
     * TO DO: Construir un suelo en el plano XZ
@@ -68,30 +75,60 @@ function loadScene()
     * TO DO: Construir una escena con 5 figuras diferentes posicionadas
     * en los cinco vertices de un pentagono regular alredor del origen
     *******************/
+   pentagon = new THREE.Object3D();
+
+    for (let i = 0; i < 5; i++) {
+        angulo = (i / 5) * Math.PI * 2;
+        const x = Math.cos(angulo) * radius;
+        const y = Math.sin(angulo) * radius;
+        vertices.push(new THREE.Vector3(x, y, 0));
+    }
+
+    const geometries = [
+        new THREE.BoxGeometry(1,1,1),
+        new THREE.SphereGeometry(0.5, 32, 32),
+        new THREE.ConeGeometry(0.5, 1, 32),
+        new THREE.CylinderGeometry(0.5, 0.5, 1, 32),
+        new THREE.TorusGeometry(0.5, 0.2, 16, 100)
+    ];
+
+    const materials = [
+        new THREE.MeshBasicMaterial({color: 'cyan'}),
+        new THREE.MeshBasicMaterial({color: 'blue'}),
+        new THREE.MeshBasicMaterial({color: 'purple'}),
+        new THREE.MeshBasicMaterial({color: 'yellow'}),
+        new THREE.MeshBasicMaterial({color: 'pink'}),
+    ];
+
+    for (let i = 0; i < 5; i++) {   
+        const mesh = new THREE.Mesh(geometries[i], materials[i]);
+        mesh.position.copy(vertices[i]);
+        pentagon.add(mesh);
+    }
+
+    pentagon.rotation.x = -Math.PI / 2;
+
+    scene.add(pentagon);
+
+
+
+    /*******************
+    * TO DO: Añadir a la escena un modelo importado en el centro del pentagono
+    *******************/
     const loader = new THREE.ObjectLoader();
     loader.load( 'models/soldado/soldado.json', 
         function(objeto){
             objeto.rotation.y = Math.PI/2;
             scene.add(objeto);
             objeto.position.y = 0;
+            objeto.position.x = 0;
         }
     );
-
-    const glloader = new GLTFLoader();
-
-    glloader.load( 'models/robota/scene.gltf', function ( gltf ) {
-        gltf.scene.position.y = 1;
-        scene.add( gltf.scene );
-    });
-
-    /*******************
-    * TO DO: Añadir a la escena un modelo importado en el centro del pentagono
-    *******************/
 
     /*******************
     * TO DO: Añadir a la escena unos ejes
     *******************/
-
+    pentagon.add(new THREE.AxesHelper(3));
     scene.add(new THREE.AxesHelper(3));
 }
 
@@ -101,6 +138,11 @@ function update()
     * TO DO: Modificar el angulo de giro de cada objeto sobre si mismo
     * y del conjunto pentagonal sobre el objeto importado
     *******************/
+   angulo += 0.01;
+   pentagon.rotation.z = angulo;
+   for (let i = 0; i < 5; i++) {
+       pentagon.children[i].rotation.z = angulo;
+   }
 }
 
 function render()

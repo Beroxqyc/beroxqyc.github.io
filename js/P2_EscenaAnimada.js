@@ -13,6 +13,11 @@
 /*******************
  * TO DO: Cargar los modulos necesarios
  *******************/
+import * as THREE from "../lib/three.module.js";
+import { GLTFLoader } from "../lib/GLTFLoader.module.js";
+import { OrbitControls } from "../lib/OrbitControls.module.js";
+import { TWEEN } from "../lib/tween.module.min.js";
+import { GUI } from "../lib/lil-gui.module.min.js";
 
 // Variables de consenso
 let renderer, scene, camera;
@@ -21,6 +26,9 @@ let renderer, scene, camera;
 /*******************
  * TO DO: Variables globales de la aplicacion
  *******************/
+let cameraControls, effectController;
+let esferaCubo, cubo, esfera;
+let angulo = 0;
 
 // Acciones
 init();
@@ -33,20 +41,28 @@ function init()
     // Motor de render
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
+
     /*******************
     * TO DO: Completar el motor de render y el canvas
     *******************/
+    document.getElementById('container').appendChild( renderer.domElement );
 
     // Escena
     scene = new THREE.Scene();
-    
+    scene.background = new THREE.Color( 0.5, 0.5, 0.5 );
+
     // Camara
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1,1000);
     camera.position.set( 0.5, 2, 7 );
+    
     /*******************
     * TO DO: Añadir manejador de camara (OrbitControls)
     *******************/
+    cameraControls = new OrbitControls( camera, renderer.domElement );
+    cameraControls.target.set(0,1,0);
     camera.lookAt( new THREE.Vector3(0,1,0) );
+
+    renderer.domElement.addEventListener('dblclick', animate );
 }
 
 function loadScene()
@@ -56,6 +72,7 @@ function loadScene()
     /*******************
     * TO DO: Misma escena que en la practica anterior
     *******************/
+   
 
 }
 

@@ -13,8 +13,9 @@
 /*******************
  * TO DO: Cargar los modulos necesarios
  *******************/
+
 import * as THREE from "../lib/three.module.js";
-import { GLTFLoader} from "../lib/GLTFLoader.module.js";
+import {GLTFLoader} from "../lib/GLTFLoader.module.js";
 
 // Variables de consenso
 let renderer, scene, camera;
@@ -44,7 +45,7 @@ function init()
     // Escena
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0.5,0.5,0.5);
-
+    
     // Camara
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1,1000);
     camera.position.set( 0.5, 2, 7 );
@@ -53,21 +54,13 @@ function init()
 
 function loadScene()
 {
-    const material = new THREE.MeshBasicMaterial({
-        color: 0x00ff00,
-        transparent: true,
-        opacity: 0.2
-    });
-    
-    const radius = 3;
-    const vertices = [];
-    
-
+    const material = new THREE.MeshNormalMaterial( );
+    const sueloMaterial = new THREE.MeshBasicMaterial( { color: 'cyan', wireframe: true } );
 
     /*******************
     * TO DO: Construir un suelo en el plano XZ
     *******************/
-    const suelo = new THREE.Mesh( new THREE.PlaneGeometry(10,10, 10,10), material );
+    const suelo = new THREE.Mesh( new THREE.PlaneGeometry(10,10, 10,10), sueloMaterial );
     suelo.rotation.x = -Math.PI / 2;
     scene.add(suelo);
 
@@ -75,61 +68,59 @@ function loadScene()
     * TO DO: Construir una escena con 5 figuras diferentes posicionadas
     * en los cinco vertices de un pentagono regular alredor del origen
     *******************/
-   pentagon = new THREE.Object3D();
+    const figuras = [
+    new THREE.BoxGeometry(1,1,1),
+    new THREE.SphereGeometry(0.5,20,20),
+    new THREE.ConeGeometry(0.5,1,20),
+    new THREE.TorusGeometry(0.5,0.2,16,100),
+    new THREE.DodecahedronGeometry(0.5)
+    ];
+
+    pentagon = new THREE.Object3D();
 
     for (let i = 0; i < 5; i++) {
-        angulo = (i / 5) * Math.PI * 2;
-        const x = Math.cos(angulo) * radius;
-        const y = Math.sin(angulo) * radius;
-        vertices.push(new THREE.Vector3(x, y, 0));
+        const angle = 2 * Math.PI * i / 5;
+        const figura = new THREE.Mesh( figuras[i], material );
+        figura.position.set( Math.cos(angle) * 2, 0.7, Math.sin(angle) * 2 );
+        figuras.push(figura);
+        pentagon.add(figura);
     }
-
-    const geometries = [
-        new THREE.BoxGeometry(1,1,1),
-        new THREE.SphereGeometry(0.5, 32, 32),
-        new THREE.ConeGeometry(0.5, 1, 32),
-        new THREE.CylinderGeometry(0.5, 0.5, 1, 32),
-        new THREE.TorusGeometry(0.5, 0.2, 16, 100)
-    ];
-
-    const materials = [
-        new THREE.MeshBasicMaterial({color: 'cyan'}),
-        new THREE.MeshBasicMaterial({color: 'blue'}),
-        new THREE.MeshBasicMaterial({color: 'purple'}),
-        new THREE.MeshBasicMaterial({color: 'yellow'}),
-        new THREE.MeshBasicMaterial({color: 'pink'}),
-    ];
-
-    for (let i = 0; i < 5; i++) {   
-        const mesh = new THREE.Mesh(geometries[i], materials[i]);
-        mesh.position.copy(vertices[i]);
-        pentagon.add(mesh);
-    }
-
-    pentagon.rotation.x = -Math.PI / 2;
 
     scene.add(pentagon);
-
-
 
     /*******************
     * TO DO: Añadir a la escena un modelo importado en el centro del pentagono
     *******************/
+
     const loader = new THREE.ObjectLoader();
     loader.load( 'models/soldado/soldado.json', 
         function(objeto){
-            objeto.rotation.y = Math.PI/2;
             scene.add(objeto);
             objeto.position.y = 0;
-            objeto.position.x = 0;
-        }
+        },
     );
+
+    const glloader = new GLTFLoader();
+
+    glloader.load( 'models/robota/scene.gltf', function ( gltf ) {
+        gltf.scene.position.x = 0.5;
+        gltf.scene.rotation.y = -Math.PI/2;
+        scene.add( gltf.scene );
+        console.log("ROBOT");
+        console.log(gltf);
+    
+    }, undefined, function ( error ) {
+    
+        console.error( error );
+    
+    } );
 
     /*******************
     * TO DO: Añadir a la escena unos ejes
     *******************/
-    pentagon.add(new THREE.AxesHelper(3));
-    scene.add(new THREE.AxesHelper(3));
+    scene.add( new THREE.AxesHelper(3) );
+    pentagon.add( new THREE.AxesHelper(3) );
+
 }
 
 function update()
@@ -138,11 +129,10 @@ function update()
     * TO DO: Modificar el angulo de giro de cada objeto sobre si mismo
     * y del conjunto pentagonal sobre el objeto importado
     *******************/
-   angulo += 0.01;
-   pentagon.rotation.z = angulo;
-   for (let i = 0; i < 5; i++) {
-       pentagon.children[i].rotation.z = angulo;
-   }
+    pentagon.rotation.y = angulo += 0.01;
+    pentagon.children.forEach( (figura) => {
+        figura.rotation.y += 0.02;
+    });
 }
 
 function render()

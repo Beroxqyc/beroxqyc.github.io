@@ -249,7 +249,7 @@ function loadGUI()
        mute: true,
        play: function(){video.play();},
        pause: function(){video.pause();},
-       restart: function(){video.currentTime = 0;},
+       restart: function(){video.currentTime = 0; video.play();},
       };
    
       const gui = new GUI();

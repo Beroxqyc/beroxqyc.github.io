@@ -26,7 +26,7 @@ let renderer, scene, camera;
 /*******************
  * TO DO: Variables globales de la aplicacion
  *******************/
-let pentagon;
+let pentagon, suelo;
 let angulo = 0;
 let cameraControls, effectController;
 
@@ -60,6 +60,8 @@ function init()
     cameraControls.target.set(0,1,0);
     camera.lookAt( new THREE.Vector3(0,1,0) );
 
+    renderer.domElement.addEventListener('dblclick', animate );
+
 }
 
 function loadScene()
@@ -70,7 +72,7 @@ function loadScene()
     const material = new THREE.MeshNormalMaterial( );
     const sueloMaterial = new THREE.MeshBasicMaterial( { color: 'cyan', wireframe: true } );
 
-    const suelo = new THREE.Mesh( new THREE.PlaneGeometry(10,10, 10,10), sueloMaterial );
+    suelo = new THREE.Mesh( new THREE.PlaneGeometry(10,10, 10,10), sueloMaterial );
     suelo.rotation.x = -Math.PI / 2;
     scene.add(suelo);
 
@@ -134,7 +136,67 @@ function loadGUI()
     * - Slider de control de radio del pentagono
     * - Checkbox para alambrico/solido
     *******************/
-    
+   effectController = {
+    mensaje: 'Aplication Controller',
+    giroY: 0.0,
+    radio: 1.0,
+    colorsuelo: "rgb(150,150,150)",
+    animacion: function(){
+        animateFiguras();
+    }
+   };
+
+   const gui = new GUI();
+
+   const h = gui.addFolder("Control pentagono");
+   h.add(effectController, "mensaje").name("menu");
+   h.add(effectController, "giroY", -180, 180, 0.025).name("Giro Y");
+   h.add(effectController, "radio", 0.0, 5.0, 0.025).name("Radio Pentagono");
+   h.addColor(effectController, "colorsuelo").name("Color");
+   h.add(effectController, "animacion").name("Animacion");
+
+}
+
+function animate(event) {
+    let x = event.clientX;
+    let y = event.clientY;
+    x = ( x / window.innerWidth ) * 2 - 1;
+    y = - ( y / window.innerHeight ) * 2 + 1;
+
+    const rayo = new THREE.Raycaster();
+    rayo.setFromCamera(new THREE.Vector2(x, y), camera);
+    const soldado = scene.getObjectByName('soldado');
+    const robota = scene.getObjectByName('robota');
+    let intersecciones = rayo.intersectObjects(soldado.children, true);
+
+    if( intersecciones.length > 0 ){
+        new TWEEN.Tween( soldado.position ).
+        to( {x:[0,0],y:[3,1],z:[0,0]}, 2000 ).
+        interpolation( TWEEN.Interpolation.Bezier ).
+        easing( TWEEN.Easing.Bounce.Out ).
+        start();
+    }
+
+    intersecciones = rayo.intersectObjects(robota.children,true);
+
+    if( intersecciones.length > 0 ){
+        new TWEEN.Tween( robota.rotation ).
+        to( {x:[0,0],y:[Math.PI,-Math.PI/2],z:[0,0]}, 5000 ).
+        interpolation( TWEEN.Interpolation.Linear ).
+        easing( TWEEN.Easing.Exponential.InOut ).
+        start();
+    }
+}
+
+function animateFiguras() {
+    for(let i = 0; i < 5; i++) {
+        new TWEEN.Tween(pentagon.children[i].position)
+        .to({y: [0.7, 2]}, 2000)
+        .interpolation(TWEEN.Interpolation.CatmullRom)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .delay(200 * i)
+        .start();
+        };
 }
 
 function update(delta)
@@ -142,6 +204,14 @@ function update(delta)
     /*******************
     * TO DO: Actualizar tween
     *******************/
+    angulo = effectController.giroY * (Math.PI / 180);
+    for (let i = 0; i < 5; i++) {
+        const angle = 2 * Math.PI * i / 5;
+        pentagon.children[i].position.set(Math.cos(angle + angulo) * 2 * effectController.radio, 0.7, Math.sin(angle + angulo) * 2 * effectController.radio);
+    }
+    suelo.material.setValues({ color: effectController.colorsuelo });
+
+    TWEEN.update();
 }
 
 function render(delta)

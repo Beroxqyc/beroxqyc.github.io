@@ -70,17 +70,10 @@ function loadScene()
     const material = new THREE.MeshNormalMaterial( );
     const sueloMaterial = new THREE.MeshBasicMaterial( { color: 'cyan', wireframe: true } );
 
-    /*******************
-    * TO DO: Construir un suelo en el plano XZ
-    *******************/
     const suelo = new THREE.Mesh( new THREE.PlaneGeometry(10,10, 10,10), sueloMaterial );
     suelo.rotation.x = -Math.PI / 2;
     scene.add(suelo);
 
-    /*******************
-    * TO DO: Construir una escena con 5 figuras diferentes posicionadas
-    * en los cinco vertices de un pentagono regular alredor del origen
-    *******************/
     const figuras = [
     new THREE.BoxGeometry(1,1,1),
     new THREE.SphereGeometry(0.5,20,20),
@@ -101,15 +94,14 @@ function loadScene()
 
     scene.add(pentagon);
 
-    /*******************
-    * TO DO: Añadir a la escena un modelo importado en el centro del pentagono
-    *******************/
-
     const loader = new THREE.ObjectLoader();
     loader.load( 'models/soldado/soldado.json', 
         function(objeto){
-            scene.add(objeto);
+            const soldado = new THREE.Object3D();
+            soldado.add(objeto);
+            scene.add(soldado);
             objeto.position.y = 0;
+            soldado.name = 'soldado';
         },
     );
 
@@ -119,8 +111,7 @@ function loadScene()
         gltf.scene.position.x = 0.5;
         gltf.scene.rotation.y = -Math.PI/2;
         scene.add( gltf.scene );
-        console.log("ROBOT");
-        console.log(gltf);
+        gltf.scene.name = 'robota';
     
     }, undefined, function ( error ) {
     
@@ -128,9 +119,6 @@ function loadScene()
     
     } );
 
-    /*******************
-    * TO DO: Añadir a la escena unos ejes
-    *******************/
     scene.add( new THREE.AxesHelper(3) );
     pentagon.add( new THREE.AxesHelper(3) );
 
@@ -146,6 +134,7 @@ function loadGUI()
     * - Slider de control de radio del pentagono
     * - Checkbox para alambrico/solido
     *******************/
+    
 }
 
 function update(delta)

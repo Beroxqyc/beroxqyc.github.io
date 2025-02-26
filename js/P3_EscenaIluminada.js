@@ -12,6 +12,11 @@
 /*******************
  * TO DO: Cargar los modulos necesarios
  *******************/
+import * as THREE from "../lib/three.module.js";
+import {GLTFLoader} from "../lib/GLTFLoader.module.js";
+import {OrbitControls} from "../lib/OrbitControls.module.js";
+import {TWEEN} from "../lib/tween.module.min.js";
+import {GUI} from "../lib/lil-gui.module.min.js";
 
 // Variables de consenso
 let renderer, scene, camera;
@@ -20,6 +25,9 @@ let renderer, scene, camera;
 /*******************
  * TO DO: Variables globales de la aplicacion
  *******************/
+let cameraControls, effectController;
+let video;
+
 
 // Acciones
 init();
@@ -36,9 +44,13 @@ function init()
     * TO DO: Completar el motor de render, el canvas y habilitar
     * el buffer de sombras
     *******************/
+   document.getElementById('container').appendChild( renderer.domElement );
+   renderer.antialias = true;
+   renderer.shadowMap.enabled = true;
 
     // Escena
     scene = new THREE.Scene();
+    scene.background = new THREE.Color( 0.5, 0.5, 0.5 );
     
     // Camara
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1,1000);
@@ -46,6 +58,8 @@ function init()
     /*******************
     * TO DO: Añadir manejador de camara (OrbitControls)
     *******************/
+    cameraControls = new OrbitControls( camera, renderer.domElement );
+    cameraControls.target.set( 0, 1, 0 );
     camera.lookAt( new THREE.Vector3(0,1,0) );
 
     // Luces
@@ -55,6 +69,28 @@ function init()
      * - Una direccional
      * - Una focal
      *******************/
+    const ambiental = new THREE.AmbientLight(0x222222);
+    scene.add(ambiental);
+    const direccional = new THREE.DirectionalLight(0xFFFFFF,0.3);
+    direccional.position.set(-1,1,-1);
+    direccional.castShadow = true;
+    scene.add(direccional);
+    const puntual = new THREE.PointLight(0xFFFFFF,0.5);
+    puntual.position.set(2,7,-4);
+    scene.add(puntual);
+    const focal = new THREE.SpotLight(0xFFFFFF,0.3);
+    focal.position.set(-2,7,4);
+    focal.target.position.set(0,0,0);
+    focal.angle= Math.PI/7;
+    focal.penumbra = 0.3;
+    focal.castShadow= true;
+    focal.shadow.camera.far = 20;
+    focal.shadow.camera.fov = 80;
+    scene.add(focal);
+    scene.add(new THREE.CameraHelper(focal.shadow.camera));
+
+    // window.addEventListener('resize', updateAspectRatio );
+    // renderer.domElement.addEventListener('dblclick', animate );
 }
 
 function loadScene()
@@ -65,6 +101,8 @@ function loadScene()
      * - De superposición
      * - De entorno
      *******************/
+    const path = './images/';
+    
 
     // Materiales
     /*******************

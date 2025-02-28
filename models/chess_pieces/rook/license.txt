@@ -1,0 +1,11 @@
+Model Information:
+* title:	Chess Piece - Rook
+* source:	https://sketchfab.com/3d-models/chess-piece-rook-4fca9e4f830348279d52b451e64d5e43
+* author:	danielpaulse (https://sketchfab.com/danielpaulse)
+
+Model License:
+* license type:	CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)
+* requirements:	Author must be credited. Modified versions must have the same license. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Chess Piece - Rook" (https://sketchfab.com/3d-models/chess-piece-rook-4fca9e4f830348279d52b451e64d5e43) by danielpaulse (https://sketchfab.com/danielpaulse) licensed under CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)

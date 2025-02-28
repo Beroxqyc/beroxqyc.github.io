@@ -18,8 +18,8 @@ import {GUI} from '../lib/lil-gui.module.min.js'
 
 let renderer, scene, camera;
 let cameraControls, effectController;
-let suelo;
-let materiales;
+let tabla;
+let materiales, entorno;
 
 init();
 loadScene();
@@ -58,12 +58,50 @@ function init() {
     focal.shadow.camera.far = 20;
     focal.shadow.camera.fov = 80;
     scene.add(focal);
-    scene.add(new THREE.CameraHelper(focal.shadow.camera));
+    // scene.add(new THREE.CameraHelper(focal.shadow.camera));
 
     window.addEventListener('resize', updateAspectRatio);
 }
 
 function loadScene() {
+    const path = './images/';
+
+    const texturaTabla = new THREE.TextureLoader().load(path + 'chess.png');
+    texturaTabla.wrapS = THREE.RepeatWrapping;
+    texturaTabla.wrapT = THREE.RepeatWrapping;
+    texturaTabla.repeat.set(8%7, 2);
+
+    entorno = [
+        path+ 'posx.jpg', path+ 'negx.jpg',
+        path+ 'posy.jpg', path+ 'negy.jpg',
+        path+ 'posz.jpg', path+ 'negz.jpg'];
+
+    const texturaEntorno = new THREE.CubeTextureLoader().load(entorno);
+
+    const materialTabla = new THREE.MeshBasicMaterial({map: texturaTabla});
+    const materialPieza = new THREE.MeshPhongMaterial({color: 'white', specular: 'grey', shininess: 30, envMap: texturaEntorno});
+
+    const paredes = [];
+            paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+                          map: new THREE.TextureLoader().load(path+"posx.jpg")}) );
+            paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+                          map: new THREE.TextureLoader().load(path+"negx.jpg")}) );
+            paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+                          map: new THREE.TextureLoader().load(path+"posy.jpg")}) );
+            paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+                          map: new THREE.TextureLoader().load(path+"negy.jpg")}) );
+            paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+                          map: new THREE.TextureLoader().load(path+"posz.jpg")}) );
+            paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+                          map: new THREE.TextureLoader().load(path+"negz.jpg")}) );
+            const habitacion = new THREE.Mesh( new THREE.BoxGeometry(40,40,40),paredes);
+            scene.add(habitacion);
+
+    tabla = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 0.1, 1), materialTabla);
+    tabla.rotation.x = -Math.PI / 2;
+    tabla.position.y = -0.2;
+    tabla.receiveShadow = true;
+    scene.add(tabla);
 
 }
 

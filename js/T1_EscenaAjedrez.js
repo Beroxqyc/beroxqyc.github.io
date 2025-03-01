@@ -19,8 +19,8 @@ import {GUI} from '../lib/lil-gui.module.min.js'
 let renderer, scene, camera;
 let cameraControls, effectController;
 let tabla;
-let materiales, entorno;
-let piezas = [];
+let entorno;
+let piezas = [], materialesW = [], materialesB = [];
 
 init();
 loadScene();
@@ -44,13 +44,17 @@ function init() {
     cameraControls.target.set(0, 1, 0);
     camera.lookAt(new THREE.Vector3(0, 1, 0));
 
-    const ambiental = new THREE.AmbientLight(0x222222);
+    const ambiental = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambiental);
-    const directional = new THREE.DirectionalLight(0xffffff, 0.3);
-    directional.position.set(-1, 1, -1);
-    directional.castShadow = true;
-    scene.add(directional);
-    const focal =  new THREE.SpotLight(0xFFFFFF, 0.3);
+    const directional1 = new THREE.DirectionalLight(0xffffff, 1);
+    directional1.position.set(-1, 1, -1);
+    directional1.castShadow = true;
+    scene.add(directional1);
+    const directional2 = new THREE.DirectionalLight(0xffffff, 1);
+    directional2.position.set(1, -1, 1);
+    directional2.castShadow = true;
+    scene.add(directional2);
+    const focal =  new THREE.SpotLight(0xFFFFFF, 1);
     focal.position.set(-2, 7, 4);
     focal.target.position.set(0, 0, 0);
     focal.angle = Math.PI / 7;
@@ -70,28 +74,29 @@ function loadScene() {
     const texturaTabla = new THREE.TextureLoader().load(path + 'ajedrez.jpg');
 
     entorno = [
-        path+ 'posx.jpg', path+ 'negx.jpg',
-        path+ 'posy.jpg', path+ 'negy.jpg',
-        path+ 'posz.jpg', path+ 'negz.jpg'];
+        path+ 'e_beach/posx.jpg', path+ 'e_beach/negx.jpg',
+        path+ 'e_beach/posy.jpg', path+ 'e_beach/negy.jpg',
+        path+ 'e_beach/posz.jpg', path+ 'e_beach/negz.jpg'];
 
     const texturaEntorno = new THREE.CubeTextureLoader().load(entorno);
 
     const materialTabla = new THREE.MeshBasicMaterial({map: texturaTabla});
-    const materialPieza = new THREE.MeshPhongMaterial({color: '0xffffff', specular: 'white', shininess: 100, envMap: texturaEntorno});
+    const materialPiezaW = new THREE.MeshPhongMaterial({color: 'white', specular: 'gray', shininess: 100, envMap: texturaEntorno});
+    const materialPiezaB= new THREE.MeshPhongMaterial({color: 'black', specular: 'gray', shininess: 100, envMap: texturaEntorno});
 
     const paredes = [];
             paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
-                          map: new THREE.TextureLoader().load(path+"posx.jpg")}) );
+                          map: new THREE.TextureLoader().load(path+"e_beach/posx.jpg")}) );
             paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
-                          map: new THREE.TextureLoader().load(path+"negx.jpg")}) );
+                          map: new THREE.TextureLoader().load(path+"e_beach/negx.jpg")}) );
             paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
-                          map: new THREE.TextureLoader().load(path+"posy.jpg")}) );
+                          map: new THREE.TextureLoader().load(path+"e_beach/posy.jpg")}) );
             paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
-                          map: new THREE.TextureLoader().load(path+"negy.jpg")}) );
+                          map: new THREE.TextureLoader().load(path+"e_beach/negy.jpg")}) );
             paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
-                          map: new THREE.TextureLoader().load(path+"posz.jpg")}) );
+                          map: new THREE.TextureLoader().load(path+"e_beach/posz.jpg")}) );
             paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
-                          map: new THREE.TextureLoader().load(path+"negz.jpg")}) );
+                          map: new THREE.TextureLoader().load(path+"e_beach/negz.jpg")}) );
             const habitacion = new THREE.Mesh( new THREE.BoxGeometry(40,40,40),paredes);
             scene.add(habitacion);
 
@@ -103,7 +108,6 @@ function loadScene() {
         // gltf.scene.position.z = -0.5;
         gltf.scene.scale.set(20, 20, 20);
         gltf.scene.name = 'pawn_W';
-        console.log(gltf.scene);
         pieza.add(gltf.scene);
         pieza.position.x = 1.2;
         pieza.position.z = -0.5;
@@ -118,7 +122,7 @@ function loadScene() {
         gltf.scene.name = 'pawn_W';
         gltf.scene.traverse( function ( node ) {
             if ( node.isMesh ) {
-                node.material = materialPieza;
+                node.material = materialPiezaW;
             }
         })
         scene.add(gltf.scene);
@@ -132,7 +136,7 @@ function loadScene() {
         const model =  gltf.scene;
         model.traverse( function ( child ) {
             if ( child.isMesh ) {
-                child.material = materialPieza;
+                child.material = materialPiezaB;
             }
         })
         scene.add(model);

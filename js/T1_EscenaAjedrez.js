@@ -20,6 +20,7 @@ let renderer, scene, camera;
 let cameraControls, effectController;
 let tabla;
 let materiales, entorno;
+let piezas = [];
 
 init();
 loadScene();
@@ -66,10 +67,7 @@ function init() {
 function loadScene() {
     const path = './images/';
 
-    const texturaTabla = new THREE.TextureLoader().load(path + 'chess.png');
-    texturaTabla.wrapS = THREE.RepeatWrapping;
-    texturaTabla.wrapT = THREE.RepeatWrapping;
-    texturaTabla.repeat.set(8%7, 2);
+    const texturaTabla = new THREE.TextureLoader().load(path + 'ajedrez.jpg');
 
     entorno = [
         path+ 'posx.jpg', path+ 'negx.jpg',
@@ -97,9 +95,37 @@ function loadScene() {
             const habitacion = new THREE.Mesh( new THREE.BoxGeometry(40,40,40),paredes);
             scene.add(habitacion);
 
+    
+    const glloader = new GLTFLoader();
+    glloader.load('../models/chess_pieces/pawn/pawn_W.glb', function ( gltf ) {
+        const pieza =  new THREE.Object3D();
+        // gltf.scene.position.x = 1.2;
+        // gltf.scene.position.z = -0.5;
+        gltf.scene.scale.set(20, 20, 20);
+        gltf.scene.name = 'pawn_W';
+        console.log(gltf.scene);
+        pieza.add(gltf.scene);
+        pieza.position.x = 1.2;
+        pieza.position.z = -0.5;
+        pieza.add(new THREE.AxesHelper(3));
+        scene.add( pieza );
+        piezas.push(pieza);
+    });
+
+    glloader.load('../models/chess_pieces/king/king_W.glb', function ( gltf ) {
+        const pieza =  new THREE.Object3D();
+        // gltf.scene.position.z = 0.5;
+        gltf.scene.scale.set(20, 20, 20);
+        gltf.scene.name = 'pawn_W';
+        pieza.add(gltf.scene);
+        scene.add(pieza);
+        pieza.position.z = 0.5;
+        pieza.add(new THREE.AxesHelper(3));
+        piezas.push(pieza);
+    });
+
     tabla = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 0.1, 1), materialTabla);
     tabla.rotation.x = -Math.PI / 2;
-    tabla.position.y = -0.2;
     tabla.receiveShadow = true;
     scene.add(tabla);
 

@@ -77,7 +77,7 @@ function loadScene() {
     const texturaEntorno = new THREE.CubeTextureLoader().load(entorno);
 
     const materialTabla = new THREE.MeshBasicMaterial({map: texturaTabla});
-    const materialPieza = new THREE.MeshPhongMaterial({color: 'white', specular: 'grey', shininess: 30, envMap: texturaEntorno});
+    const materialPieza = new THREE.MeshPhongMaterial({color: '0xffffff', specular: 'white', shininess: 100, envMap: texturaEntorno});
 
     const paredes = [];
             paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
@@ -113,15 +113,31 @@ function loadScene() {
     });
 
     glloader.load('../models/chess_pieces/king/king_W.glb', function ( gltf ) {
-        const pieza =  new THREE.Object3D();
+        gltf.scene.position.z = 0.5;
+        gltf.scene.scale.set(20, 20, 20);
+        gltf.scene.name = 'pawn_W';
+        gltf.scene.traverse( function ( node ) {
+            if ( node.isMesh ) {
+                node.material = materialPieza;
+            }
+        })
+        scene.add(gltf.scene);
+    });
+
+    glloader.load('../models/chess_pieces/king/king_B.glb', function ( gltf ) {
         // gltf.scene.position.z = 0.5;
         gltf.scene.scale.set(20, 20, 20);
         gltf.scene.name = 'pawn_W';
-        pieza.add(gltf.scene);
-        scene.add(pieza);
-        pieza.position.z = 0.5;
-        pieza.add(new THREE.AxesHelper(3));
-        piezas.push(pieza);
+
+        const model =  gltf.scene;
+        model.traverse( function ( child ) {
+            if ( child.isMesh ) {
+                child.material = materialPieza;
+            }
+        })
+        scene.add(model);
+        // pieza.position.z = 0.5;
+        // pieza.add(new THREE.AxesHelper(3));
     });
 
     tabla = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 0.1, 1), materialTabla);

@@ -47,13 +47,15 @@ function init() {
     const ambiental = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambiental);
     const directional1 = new THREE.DirectionalLight(0xffffff, 1);
-    directional1.position.set(-1, 1, -1);
+    directional1.position.set(-2, 5, -2);
     directional1.castShadow = true;
     scene.add(directional1);
     const directional2 = new THREE.DirectionalLight(0xffffff, 1);
-    directional2.position.set(1, -1, 1);
+    directional2.position.set(2, 5, 2);
     directional2.castShadow = true;
     scene.add(directional2);
+    // scene.add(new THREE.CameraHelper(directional1.shadow.camera));
+    // scene.add(new THREE.CameraHelper(directional2.shadow.camera));
     const focal =  new THREE.SpotLight(0xFFFFFF, 1);
     focal.position.set(-2, 7, 4);
     focal.target.position.set(0, 0, 0);
@@ -102,46 +104,199 @@ function loadScene() {
 
     
     const glloader = new GLTFLoader();
-    glloader.load('../models/chess_pieces/pawn/pawn_W.glb', function ( gltf ) {
-        const pieza =  new THREE.Object3D();
-        // gltf.scene.position.x = 1.2;
-        // gltf.scene.position.z = -0.5;
-        gltf.scene.scale.set(20, 20, 20);
-        gltf.scene.name = 'pawn_W';
-        pieza.add(gltf.scene);
-        pieza.position.x = 1.2;
-        pieza.position.z = -0.5;
-        pieza.add(new THREE.AxesHelper(3));
-        scene.add( pieza );
-        piezas.push(pieza);
-    });
 
-    glloader.load('../models/chess_pieces/king/king_W.glb', function ( gltf ) {
-        gltf.scene.position.z = 0.5;
-        gltf.scene.scale.set(20, 20, 20);
-        gltf.scene.name = 'pawn_W';
-        gltf.scene.traverse( function ( node ) {
+    //carga de pawn
+    for (let i = -4; i < 4; i++) {
+        glloader.load('../models/chess_pieces/pawn/pawn_W.glb', function ( gltf ) {
+            const model = gltf.scene;
+            model.position.x = i+0.2;
+            model.position.z = 2.5;
+            model.scale.set(20, 20, 20);
+            model.name = 'pawn_W'+(i+4);
+            model.traverse( function ( node ) {
+                if ( node.isMesh ) {
+                    node.material = materialPiezaW;
+                }
+            })
+            // model.add(new THREE.AxesHelper(3));
+            scene.add( model );
+        });
+        glloader.load('../models/chess_pieces/pawn/pawn_B.glb', function ( gltf ) {
+            const model = gltf.scene;
+            model.position.x = i+0.8;
+            model.position.z = -2.5;
+            model.scale.set(20, 20, 20);
+            model.name = 'pawn_B'+(i+4);
+            model.traverse( function ( node ) {
+                if ( node.isMesh ) {
+                    node.material = materialPiezaB;
+                }
+            })
+            // model.add(new THREE.AxesHelper(3));
+            scene.add( model );
+        });
+    }
+
+    //carga de rook
+    for (let i = -4; i < 4; i+=7) {
+        glloader.load('../models/chess_pieces/rook/rook_W.glb', function ( gltf ) {
+            const model = gltf.scene;
+            model.position.x = i+0.2;
+            model.position.z = 3.5;
+            model.scale.set(20, 20, 20);
+            model.name = 'rook_W'+(i+4);
+            model.traverse( function ( node ) {
+                if ( node.isMesh ) {
+                    node.material = materialPiezaW;
+                }
+            })
+            // model.add(new THREE.AxesHelper(3));
+            scene.add( model );
+        });
+        glloader.load('../models/chess_pieces/rook/rook_B.glb', function ( gltf ) {
+            const model = gltf.scene;
+            model.position.x = i+0.8;
+            model.position.z = -3.5;
+            model.scale.set(20, 20, 20);
+            model.name = 'rook_B'+(i+4);
+            model.traverse( function ( node ) {
+                if ( node.isMesh ) {
+                    node.material = materialPiezaB;
+                }
+            })
+            // model.add(new THREE.AxesHelper(3));
+            scene.add( model );
+        });
+    }
+
+    //carga de knight
+    for (let i = -3; i < 3; i+=5) {
+        glloader.load('../models/chess_pieces/knight/knight_W.glb', function( gltf ) {
+            const model = gltf.scene;
+            model.position.x = i+0.5;
+            model.rotation.y = -Math.PI/2;
+            model.position.z = 3;
+            model.scale.set(20, 20, 20);
+            model.name = 'knight_W'+(i+4);
+            model.traverse( function ( node ) {
+                if ( node.isMesh ) {
+                    node.material = materialPiezaW;
+                }
+            })
+            // model.add(new THREE.AxesHelper(3));
+            scene.add( model );
+        });
+
+        glloader.load('../models/chess_pieces/knight/knight_B.glb', function( gltf ) {
+            const model = gltf.scene;
+            model.position.x = i+0.5;
+            model.rotation.y = Math.PI/2;
+            model.position.z = -4;
+            model.scale.set(20, 20, 20);
+            model.name = 'knight_B'+(i+4);
+            model.traverse( function ( node ) {
+                if ( node.isMesh ) {
+                    node.material = materialPiezaB;
+                }
+            })
+            // model.add(new THREE.AxesHelper(3));
+            scene.add( model );
+        });
+    }
+
+    //carga de bishop
+    for (let i = -2; i < 2; i+=3) {
+        glloader.load('../models/chess_pieces/bishop/bishop_W.glb', function( gltf ) {
+            const model = gltf.scene;
+            model.position.x = i+0.1;
+            model.position.z = 3.5;
+            model.scale.set(17, 17, 17);
+            model.name = 'bishop_W'+(i+4);
+            model.traverse( function ( node ) {
+                if ( node.isMesh ) {
+                    node.material = materialPiezaW;
+                }
+            })
+            // model.add(new THREE.AxesHelper(3));
+            scene.add( model );
+        });
+
+        glloader.load('../models/chess_pieces/bishop/bishop_B.glb', function( gltf ) {
+            const model = gltf.scene;
+            model.position.x = i+0.9;
+            model.position.z = -3.5;
+            model.scale.set(17, 17, 17);
+            model.name = 'bishop_B'+(i+4);
+            model.traverse( function ( node ) {
+                if ( node.isMesh ) {
+                    node.material = materialPiezaB;
+                }
+            })
+            // model.add(new THREE.AxesHelper(3));
+            scene.add( model );
+        });
+    }
+
+    //carga de queen
+    glloader.load('../models/chess_pieces/queen/queen_W.glb', function( gltf ) {
+        const model = gltf.scene;
+        model.position.x = -0.95;
+        model.position.z = 3.5;
+        model.scale.set(20, 20, 20);
+        model.name = 'queen_W';
+        model.traverse( function ( node ) {
             if ( node.isMesh ) {
                 node.material = materialPiezaW;
             }
         })
-        scene.add(gltf.scene);
+        // model.add(new THREE.AxesHelper(3));
+        scene.add( model );
     });
 
-    glloader.load('../models/chess_pieces/king/king_B.glb', function ( gltf ) {
-        // gltf.scene.position.z = 0.5;
-        gltf.scene.scale.set(20, 20, 20);
-        gltf.scene.name = 'pawn_W';
-
-        const model =  gltf.scene;
-        model.traverse( function ( child ) {
-            if ( child.isMesh ) {
-                child.material = materialPiezaB;
+    glloader.load('../models/chess_pieces/queen/queen_W.glb', function( gltf ) {
+        const model = gltf.scene;
+        model.position.x = -0.95;
+        model.position.z = -3.5;
+        model.scale.set(20, 20, 20);
+        model.name = 'queen_B';
+        model.traverse( function ( node ) {
+            if ( node.isMesh ) {
+                node.material = materialPiezaB;
             }
         })
-        scene.add(model);
-        // pieza.position.z = 0.5;
-        // pieza.add(new THREE.AxesHelper(3));
+        // model.add(new THREE.AxesHelper(3));
+        scene.add( model );
+    });
+
+    //carga de king
+    glloader.load('../models/chess_pieces/king/king_W.glb', function( gltf ) {
+        const model = gltf.scene;
+        model.position.x = 0.05;
+        model.position.z = 3.5;
+        model.scale.set(20, 20, 20);
+        model.name = 'king_W';
+        model.traverse( function ( node ) {
+            if ( node.isMesh ) {
+                node.material = materialPiezaW;
+            }
+        })
+        // model.add(new THREE.AxesHelper(3));
+        scene.add( model );
+    });
+
+    glloader.load('../models/chess_pieces/king/king_B.glb', function( gltf ) {
+        const model = gltf.scene;
+        model.position.x = 0.95;
+        model.position.z = -3.5;
+        model.scale.set(20, 20, 20);
+        model.name = 'king_B';
+        model.traverse( function ( node ) {
+            if ( node.isMesh ) {
+                node.material = materialPiezaB;
+            }
+        })
+        // model.add(new THREE.AxesHelper(3));
+        scene.add( model );
     });
 
     tabla = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 0.1, 1), materialTabla);

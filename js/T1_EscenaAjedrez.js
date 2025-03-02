@@ -52,7 +52,7 @@ function init() {
     scene.backgroud = new THREE.Color(0.5, 0.5, 0.5);
 
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0.5, 2, 7);
+    camera.position.set(0, 4, 7);
     cameraControls = new OrbitControls(camera, renderer.domElement);
     cameraControls.target.set(0, 1, 0);
     camera.lookAt(new THREE.Vector3(0, 1, 0));
@@ -60,11 +60,11 @@ function init() {
     const ambiental = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambiental);
     const directional1 = new THREE.DirectionalLight(0xffffff, 1);
-    directional1.position.set(-2, 5, -2);
+    directional1.position.set(-3, 5, -3);
     directional1.castShadow = true;
     scene.add(directional1);
     const directional2 = new THREE.DirectionalLight(0xffffff, 1);
-    directional2.position.set(2, 5, 2);
+    directional2.position.set(3, 5, 3);
     directional2.castShadow = true;
     scene.add(directional2);
     // scene.add(new THREE.CameraHelper(directional1.shadow.camera));
@@ -80,7 +80,9 @@ function init() {
     scene.add(focal);
     // scene.add(new THREE.CameraHelper(focal.shadow.camera));
 
+
     window.addEventListener('resize', updateAspectRatio);
+    renderer.domElement.addEventListener('click', click);
 }
 
 function loadScene() {
@@ -446,7 +448,22 @@ function updateHabitacion() {
     materialW['Phong'] = materialPiezaW;
     materialB['Phong'] = materialPiezaB;
     updatePiezaMaterial();
-    
+
+}
+
+function click(event) {
+    let x = event.clientX;
+    let y = event.clientY;
+    x = ( x / window.innerWidth ) * 2 - 1;
+    y = - ( y / window.innerHeight ) * 2 + 1;
+
+    const rayo = new THREE.Raycaster();
+    rayo.setFromCamera(new THREE.Vector2(x, y), camera);
+    const intersects = rayo.intersectObjects(scene.children);
+    if (intersects.length > 0) {
+        const selectedObject = intersects[0].object;
+        console.log(selectedObject.parent.name);
+    }
 }
 
 function update() {

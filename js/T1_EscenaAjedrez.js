@@ -460,17 +460,42 @@ function click(event) {
 
     const rayo = new THREE.Raycaster();
     rayo.setFromCamera(new THREE.Vector2(x, y), camera);
-    const intersects = rayo.intersectObjects(scene.children);
-    
-    if (intersects.length > 0) {
-        selectedObject = intersects[0].object;
+    const intersectsW = rayo.intersectObjects(piezasW.children);
+    const intersectsB = rayo.intersectObjects(piezasB.children);
+
+    if (intersectsW.length > 0 && selectedObject == undefined) {
+        selectedObject = intersectsW[0].object;
         selectedObject = selectedObject.parent.parent.parent.parent.parent;
-        console.log(selectedObject.name);
-        console.log(selectedObject.position.x);
+        const pieza = scene.getObjectByName(selectedObject.name);
+        new TWEEN.Tween(pieza.position)
+        .to({y:[1, 1]}, 2000 )
+        .interpolation(TWEEN.Interpolation.CatmullRom)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .start();
+    } else if (intersectsW.length > 0 && selectedObject != undefined) {
+        const pieza = scene.getObjectByName(selectedObject.name);
+        new TWEEN.Tween(pieza.position)
+        .to({y:[0.1, 0]}, 2000 )
+        .interpolation(TWEEN.Interpolation.CatmullRom)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .start();
+        selectedObject = undefined;
+    }
+
+    if (intersectsB.length > 0 && selectedObject == undefined) {
+        selectedObject = intersectsB[0].object;
+        selectedObject = selectedObject.parent.parent.parent.parent.parent;
+        const pieza = scene.getObjectByName(selectedObject.name);
+        new TWEEN.Tween(pieza.position)
+        .to({y:[1, 1]}, 2000 )
+        .interpolation(TWEEN.Interpolation.CatmullRom)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .start();
     }
 }
 
 function update() {
+    TWEEN.update();
     
 }
 

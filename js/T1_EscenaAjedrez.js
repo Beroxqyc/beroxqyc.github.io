@@ -20,7 +20,8 @@ let renderer, scene, camera;
 let cameraControls, effectController;
 let tabla;
 let entorno;
-let piezas = [], materialesW = [], materialesB = [];
+let piezasW, piezasB;
+let materialW = [], materialB = [];
 
 init();
 loadScene();
@@ -81,10 +82,28 @@ function loadScene() {
         path+ 'e_beach/posz.jpg', path+ 'e_beach/negz.jpg'];
 
     const texturaEntorno = new THREE.CubeTextureLoader().load(entorno);
+    const texturaMadera = new THREE.TextureLoader().load(path + 'wood512.jpg');
+    const texturaMetalica = new THREE.TextureLoader().load(path + 'metal_128.jpg');
 
     const materialTabla = new THREE.MeshBasicMaterial({map: texturaTabla});
     const materialPiezaW = new THREE.MeshPhongMaterial({color: 'white', specular: 'gray', shininess: 100, envMap: texturaEntorno});
     const materialPiezaB= new THREE.MeshPhongMaterial({color: 'black', specular: 'gray', shininess: 100, envMap: texturaEntorno});
+    const materialMaderaW = new THREE.MeshBasicMaterial({map: texturaMadera});
+    const materialMaderaB = new THREE.MeshBasicMaterial({map: texturaMadera});
+    const materialMetalicaW = new THREE.MeshBasicMaterial({map: texturaMetalica});
+    const materialMetalicaB = new THREE.MeshBasicMaterial({map: texturaMetalica});
+
+    materialW = {
+        'Phong' : materialPiezaW,
+        'Madera': materialMaderaW,
+        'Metal': materialMetalicaW
+    }
+
+    materialB = {
+        'Phong' : materialPiezaB,
+        'Madera': materialMaderaB,
+        'Metal': materialMetalicaB
+    }
 
     const paredes = [];
             paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
@@ -102,6 +121,8 @@ function loadScene() {
             const habitacion = new THREE.Mesh( new THREE.BoxGeometry(40,40,40),paredes);
             scene.add(habitacion);
 
+    piezasW = new THREE.Object3D();
+    piezasB = new THREE.Object3D();
     
     const glloader = new GLTFLoader();
 
@@ -115,11 +136,12 @@ function loadScene() {
             model.name = 'pawn_W'+(i+4);
             model.traverse( function ( node ) {
                 if ( node.isMesh ) {
-                    node.material = materialPiezaW;
+                    node.material = materialW['Phong'];
                 }
             })
             // model.add(new THREE.AxesHelper(3));
-            scene.add( model );
+            // scene.add( model );
+            piezasW.add(model);
         });
         glloader.load('../models/chess_pieces/pawn/pawn_B.glb', function ( gltf ) {
             const model = gltf.scene;
@@ -129,11 +151,12 @@ function loadScene() {
             model.name = 'pawn_B'+(i+4);
             model.traverse( function ( node ) {
                 if ( node.isMesh ) {
-                    node.material = materialPiezaB;
+                    node.material = materialB['Phong'];
                 }
             })
             // model.add(new THREE.AxesHelper(3));
-            scene.add( model );
+            // scene.add( model );
+            piezasB.add(model);
         });
     }
 
@@ -147,11 +170,12 @@ function loadScene() {
             model.name = 'rook_W'+(i+4);
             model.traverse( function ( node ) {
                 if ( node.isMesh ) {
-                    node.material = materialPiezaW;
+                    node.material = materialW['Phong'];
                 }
             })
             // model.add(new THREE.AxesHelper(3));
-            scene.add( model );
+            // scene.add( model );
+            piezasW.add(model);
         });
         glloader.load('../models/chess_pieces/rook/rook_B.glb', function ( gltf ) {
             const model = gltf.scene;
@@ -161,11 +185,12 @@ function loadScene() {
             model.name = 'rook_B'+(i+4);
             model.traverse( function ( node ) {
                 if ( node.isMesh ) {
-                    node.material = materialPiezaB;
+                    node.material = materialB['Phong'];
                 }
             })
             // model.add(new THREE.AxesHelper(3));
-            scene.add( model );
+            // scene.add( model );
+            piezasB.add(model);
         });
     }
 
@@ -180,11 +205,12 @@ function loadScene() {
             model.name = 'knight_W'+(i+4);
             model.traverse( function ( node ) {
                 if ( node.isMesh ) {
-                    node.material = materialPiezaW;
+                    node.material = materialW['Phong'];
                 }
             })
             // model.add(new THREE.AxesHelper(3));
-            scene.add( model );
+            // scene.add( model );
+            piezasW.add(model);
         });
 
         glloader.load('../models/chess_pieces/knight/knight_B.glb', function( gltf ) {
@@ -196,11 +222,12 @@ function loadScene() {
             model.name = 'knight_B'+(i+4);
             model.traverse( function ( node ) {
                 if ( node.isMesh ) {
-                    node.material = materialPiezaB;
+                    node.material = materialB['Phong'];
                 }
             })
             // model.add(new THREE.AxesHelper(3));
-            scene.add( model );
+            // scene.add( model );
+            piezasB.add(model);
         });
     }
 
@@ -214,11 +241,12 @@ function loadScene() {
             model.name = 'bishop_W'+(i+4);
             model.traverse( function ( node ) {
                 if ( node.isMesh ) {
-                    node.material = materialPiezaW;
+                    node.material = materialW['Phong'];
                 }
             })
             // model.add(new THREE.AxesHelper(3));
-            scene.add( model );
+            // scene.add( model );
+            piezasW.add(model);
         });
 
         glloader.load('../models/chess_pieces/bishop/bishop_B.glb', function( gltf ) {
@@ -229,11 +257,12 @@ function loadScene() {
             model.name = 'bishop_B'+(i+4);
             model.traverse( function ( node ) {
                 if ( node.isMesh ) {
-                    node.material = materialPiezaB;
+                    node.material = materialB['Phong'];
                 }
             })
             // model.add(new THREE.AxesHelper(3));
-            scene.add( model );
+            // scene.add( model );
+            piezasB.add(model);
         });
     }
 
@@ -246,26 +275,28 @@ function loadScene() {
         model.name = 'queen_W';
         model.traverse( function ( node ) {
             if ( node.isMesh ) {
-                node.material = materialPiezaW;
+                node.material = materialW['Phong'];
             }
         })
         // model.add(new THREE.AxesHelper(3));
-        scene.add( model );
+        // scene.add( model );
+        piezasW.add(model);
     });
 
-    glloader.load('../models/chess_pieces/queen/queen_W.glb', function( gltf ) {
+    glloader.load('../models/chess_pieces/queen/queen_B.glb', function( gltf ) {
         const model = gltf.scene;
-        model.position.x = -0.95;
+        model.position.x = -0.05;
         model.position.z = -3.5;
         model.scale.set(20, 20, 20);
         model.name = 'queen_B';
         model.traverse( function ( node ) {
             if ( node.isMesh ) {
-                node.material = materialPiezaB;
+                node.material = materialB['Phong'];
             }
         })
         // model.add(new THREE.AxesHelper(3));
-        scene.add( model );
+        // scene.add( model );
+        piezasB.add(model);
     });
 
     //carga de king
@@ -277,11 +308,12 @@ function loadScene() {
         model.name = 'king_W';
         model.traverse( function ( node ) {
             if ( node.isMesh ) {
-                node.material = materialPiezaW;
+                node.material = materialW['Phong'];
             }
         })
         // model.add(new THREE.AxesHelper(3));
-        scene.add( model );
+        // scene.add( model );
+        piezasW.add(model);
     });
 
     glloader.load('../models/chess_pieces/king/king_B.glb', function( gltf ) {
@@ -292,12 +324,16 @@ function loadScene() {
         model.name = 'king_B';
         model.traverse( function ( node ) {
             if ( node.isMesh ) {
-                node.material = materialPiezaB;
+                node.material = materialB['Phong'];
             }
         })
         // model.add(new THREE.AxesHelper(3));
-        scene.add( model );
+        // scene.add( model );
+        piezasB.add(model);
     });
+
+    scene.add(piezasW);
+    scene.add(piezasB);
 
     tabla = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 0.1, 1), materialTabla);
     tabla.rotation.x = -Math.PI / 2;
@@ -307,11 +343,28 @@ function loadScene() {
 }
 
 function loadGUI() {
+    effectController = {
+        mensaje: 'controlador',
+        materialPieza: 'Phong',
+        texturaTabla: ''
+    }
+
+    const gui = new GUI();
+
+    const h = gui.addFolder('Materiales');
+    h.add(effectController, 'materialPieza', ['Phong', 'Lambert', 'Basic']).onChange(updateMaterial);
+}
+
+function loadPiezas() {
+
+}
+
+function updateMaterial() {
 
 }
 
 function update() {
-
+    
 }
 
 function updateAspectRatio() {

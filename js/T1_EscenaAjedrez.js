@@ -462,7 +462,8 @@ function click(event) {
     const intersects = rayo.intersectObjects(scene.children);
     if (intersects.length > 0) {
         const selectedObject = intersects[0].object;
-        console.log(selectedObject.parent.name);
+        console.log(selectedObject.parent.parent.parent.parent.parent);
+        console.log(selectedObject.parent.parent.parent.parent.parent.position.x);
     }
 }
 

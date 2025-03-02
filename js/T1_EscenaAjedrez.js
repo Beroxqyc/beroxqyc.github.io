@@ -34,6 +34,7 @@ let fondo = {
     'Lycksele': 'Lycksele/',
     'San Francisco': 'SanFrancisco/'
 }
+let selectedObject;
 
 init();
 loadScene();
@@ -460,10 +461,12 @@ function click(event) {
     const rayo = new THREE.Raycaster();
     rayo.setFromCamera(new THREE.Vector2(x, y), camera);
     const intersects = rayo.intersectObjects(scene.children);
+    
     if (intersects.length > 0) {
-        const selectedObject = intersects[0].object;
-        console.log(selectedObject.parent.parent.parent.parent.parent);
-        console.log(selectedObject.parent.parent.parent.parent.parent.position.x);
+        selectedObject = intersects[0].object;
+        selectedObject = selectedObject.parent.parent.parent.parent.parent;
+        console.log(selectedObject.name);
+        console.log(selectedObject.position.x);
     }
 }
 

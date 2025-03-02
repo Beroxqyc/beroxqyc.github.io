@@ -435,6 +435,18 @@ function updateHabitacion() {
         map: new THREE.TextureLoader().load(path+"negz.jpg")}) );
     
     habitacion.material = paredes;
+
+    entorno = [
+        path+ 'posx.jpg', path+ 'negx.jpg',
+        path+ 'posy.jpg', path+ 'negy.jpg',
+        path+ 'posz.jpg', path+ 'negz.jpg'];
+    const texturaEntorno = new THREE.CubeTextureLoader().load(entorno);
+    const materialPiezaW = new THREE.MeshPhongMaterial({color: 'white', specular: 'gray', shininess: 100, envMap: texturaEntorno});
+    const materialPiezaB= new THREE.MeshPhongMaterial({color: 'black', specular: 'gray', shininess: 100, envMap: texturaEntorno});
+    materialW['Phong'] = materialPiezaW;
+    materialB['Phong'] = materialPiezaB;
+    updatePiezaMaterial();
+    
 }
 
 function update() {

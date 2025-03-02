@@ -19,9 +19,21 @@ import {GUI} from '../lib/lil-gui.module.min.js'
 let renderer, scene, camera;
 let cameraControls, effectController;
 let tabla;
-let entorno;
+let entorno, habitacion, paredes = [];
 let piezasW, piezasB;
 let materialW = [], materialB = [];
+let materialesTabla = {
+    'Normal': 'ajedrez.jpg',
+    'Marmol': 'ajeMarmol.jpg',
+    'Madera': 'ajeMadera.jpg'
+};
+let fondo = {
+    'Beach': 'beach/',
+    'Golden Bridge': 'GGateB/',
+    'Heroes Square': 'HeroesSquare/',
+    'Lycksele': 'Lycksele/',
+    'San Francisco': 'SanFrancisco/'
+}
 
 init();
 loadScene();
@@ -72,20 +84,43 @@ function init() {
 }
 
 function loadScene() {
+
+    loadMateriales();
+    loadHabitacion('beach/');
+    loadPiezas();
+    loadTabla('ajedrez.jpg');
+
+}
+
+function loadGUI() {
+    effectController = {
+        mensaje: 'controlador',
+        materialPieza: 'Phong',
+        texturaTabla: 'Normal',
+        entorno: 'Beach'
+    }
+
+    const gui = new GUI();
+
+    const h = gui.addFolder('Materiales');
+    h.add(effectController, 'materialPieza', ['Phong', 'Madera', 'Metal']).name('Material Pieza').onChange(updatePiezaMaterial);
+    h.add(effectController, 'texturaTabla', ['Normal', 'Marmol', 'Madera']).name('Textura Tabla').onChange(updateTablaMaterial);
+    h.add(effectController, 'entorno', ['Beach', 'Golden Bridge', 'Heroes Square', 'Lycksele', 'San Francisco']).name('Entorno').onChange(updateHabitacion);
+}
+
+function loadMateriales() {
     const path = './images/';
 
-    const texturaTabla = new THREE.TextureLoader().load(path + 'ajedrez.jpg');
-
     entorno = [
-        path+ 'e_beach/posx.jpg', path+ 'e_beach/negx.jpg',
-        path+ 'e_beach/posy.jpg', path+ 'e_beach/negy.jpg',
-        path+ 'e_beach/posz.jpg', path+ 'e_beach/negz.jpg'];
+        path+ 'beach/posx.jpg', path+ 'beach/negx.jpg',
+        path+ 'beach/posy.jpg', path+ 'beach/negy.jpg',
+        path+ 'beach/posz.jpg', path+ 'beach/negz.jpg'];
 
     const texturaEntorno = new THREE.CubeTextureLoader().load(entorno);
     const texturaMadera = new THREE.TextureLoader().load(path + 'wood512.jpg');
     const texturaMetalica = new THREE.TextureLoader().load(path + 'metal_128.jpg');
 
-    const materialTabla = new THREE.MeshBasicMaterial({map: texturaTabla});
+    
     const materialPiezaW = new THREE.MeshPhongMaterial({color: 'white', specular: 'gray', shininess: 100, envMap: texturaEntorno});
     const materialPiezaB= new THREE.MeshPhongMaterial({color: 'black', specular: 'gray', shininess: 100, envMap: texturaEntorno});
     const materialMaderaW = new THREE.MeshBasicMaterial({map: texturaMadera});
@@ -105,48 +140,39 @@ function loadScene() {
         'Metal': materialMetalicaB
     }
 
-    const paredes = [];
-            paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
-                          map: new THREE.TextureLoader().load(path+"e_beach/posx.jpg")}) );
-            paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
-                          map: new THREE.TextureLoader().load(path+"e_beach/negx.jpg")}) );
-            paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
-                          map: new THREE.TextureLoader().load(path+"e_beach/posy.jpg")}) );
-            paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
-                          map: new THREE.TextureLoader().load(path+"e_beach/negy.jpg")}) );
-            paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
-                          map: new THREE.TextureLoader().load(path+"e_beach/posz.jpg")}) );
-            paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
-                          map: new THREE.TextureLoader().load(path+"e_beach/negz.jpg")}) );
-            const habitacion = new THREE.Mesh( new THREE.BoxGeometry(40,40,40),paredes);
+}
+
+function loadHabitacion(partialPath) {
+
+    const path = '../images/'+ partialPath;
+
+    paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+        map: new THREE.TextureLoader().load(path+"posx.jpg")}) );
+    paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+        map: new THREE.TextureLoader().load(path+"negx.jpg")}) );
+    paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+        map: new THREE.TextureLoader().load(path+"posy.jpg")}) );
+    paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+        map: new THREE.TextureLoader().load(path+"negy.jpg")}) );
+    paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+        map: new THREE.TextureLoader().load(path+"posz.jpg")}) );
+    paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+        map: new THREE.TextureLoader().load(path+"negz.jpg")}) );
+
+    habitacion = new THREE.Mesh( new THREE.BoxGeometry(40,40,40), paredes);
     scene.add(habitacion);
 
-    loadPiezas();
+}
 
-    scene.add(piezasW);
-    scene.add(piezasB);
+function loadTabla(partialPath) {
+    const path = '../images/'+ partialPath;
+    const texturaTabla = new THREE.TextureLoader().load(path);
+    const materialTabla = new THREE.MeshBasicMaterial({map: texturaTabla});
 
     tabla = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 0.1, 1), materialTabla);
     tabla.rotation.x = -Math.PI / 2;
     tabla.receiveShadow = true;
     scene.add(tabla);
-
-}
-
-function loadGUI() {
-    effectController = {
-        mensaje: 'controlador',
-        materialPieza: 'Phong',
-        texturaTabla: '',
-        entorno: ''
-    }
-
-    const gui = new GUI();
-
-    const h = gui.addFolder('Materiales');
-    h.add(effectController, 'materialPieza', ['Phong', 'Madera', 'Metal']).name('Material Pieza').onChange(updateMaterial);
-    h.add(effectController, 'texturaTabla', ['Madera', 'Metal', 'Piedra']).name('Textura Tabla')
-    h.add(effectController, 'entorno', ['Ninguno', 'Beach', 'Cave']).name('Entorno')
 }
 
 function loadPiezas() {
@@ -362,24 +388,53 @@ function loadPiezas() {
         piezasB.add(model);
     });
 
+    scene.add(piezasW);
+    scene.add(piezasB);
 }
 
-function updateMaterial() {
+function updatePiezaMaterial() {
     for (let i = 0; i < piezasW.children.length; i++) {
         const piezaW = piezasW.children[i];
         piezaW.traverse( function ( node ) {
             if ( node.isMesh ) {
                 node.material = materialW[effectController.materialPieza];
             }
-        })
+        });
 
         const piezaB = piezasB.children[i];
         piezaB.traverse( function ( node ) {
             if ( node.isMesh ) {
                 node.material = materialB[effectController.materialPieza];
             }
-        })
+        });
     }
+}
+
+function updateTablaMaterial() {
+    const texturaTabla = new THREE.TextureLoader().load( '../images/'+ materialesTabla[effectController.texturaTabla]);
+    const materialTabla = new THREE.MeshBasicMaterial({map: texturaTabla});
+
+    tabla.material = materialTabla;
+}
+
+function updateHabitacion() {
+    paredes = [];
+    const path = '../images/'+ fondo[effectController.entorno];
+
+    paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+        map: new THREE.TextureLoader().load(path+"posx.jpg")}) );
+    paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+        map: new THREE.TextureLoader().load(path+"negx.jpg")}) );
+    paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+        map: new THREE.TextureLoader().load(path+"posy.jpg")}) );
+    paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+        map: new THREE.TextureLoader().load(path+"negy.jpg")}) );
+    paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+        map: new THREE.TextureLoader().load(path+"posz.jpg")}) );
+    paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
+        map: new THREE.TextureLoader().load(path+"negz.jpg")}) );
+    
+    habitacion.material = paredes;
 }
 
 function update() {

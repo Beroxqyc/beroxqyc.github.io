@@ -89,9 +89,9 @@ function loadScene() {
     const materialPiezaW = new THREE.MeshPhongMaterial({color: 'white', specular: 'gray', shininess: 100, envMap: texturaEntorno});
     const materialPiezaB= new THREE.MeshPhongMaterial({color: 'black', specular: 'gray', shininess: 100, envMap: texturaEntorno});
     const materialMaderaW = new THREE.MeshBasicMaterial({map: texturaMadera});
-    const materialMaderaB = new THREE.MeshBasicMaterial({map: texturaMadera});
+    const materialMaderaB = new THREE.MeshBasicMaterial({map: texturaMadera, color: 0x222222});
     const materialMetalicaW = new THREE.MeshBasicMaterial({map: texturaMetalica});
-    const materialMetalicaB = new THREE.MeshBasicMaterial({map: texturaMetalica});
+    const materialMetalicaB = new THREE.MeshBasicMaterial({map: texturaMetalica, color: 0x222222});
 
     materialW = {
         'Phong' : materialPiezaW,
@@ -119,11 +119,41 @@ function loadScene() {
             paredes.push( new THREE.MeshBasicMaterial({side:THREE.BackSide,
                           map: new THREE.TextureLoader().load(path+"e_beach/negz.jpg")}) );
             const habitacion = new THREE.Mesh( new THREE.BoxGeometry(40,40,40),paredes);
-            scene.add(habitacion);
+    scene.add(habitacion);
+
+    loadPiezas();
+
+    scene.add(piezasW);
+    scene.add(piezasB);
+
+    tabla = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 0.1, 1), materialTabla);
+    tabla.rotation.x = -Math.PI / 2;
+    tabla.receiveShadow = true;
+    scene.add(tabla);
+
+}
+
+function loadGUI() {
+    effectController = {
+        mensaje: 'controlador',
+        materialPieza: 'Phong',
+        texturaTabla: '',
+        entorno: ''
+    }
+
+    const gui = new GUI();
+
+    const h = gui.addFolder('Materiales');
+    h.add(effectController, 'materialPieza', ['Phong', 'Madera', 'Metal']).name('Material Pieza').onChange(updateMaterial);
+    h.add(effectController, 'texturaTabla', ['Madera', 'Metal', 'Piedra']).name('Textura Tabla')
+    h.add(effectController, 'entorno', ['Ninguno', 'Beach', 'Cave']).name('Entorno')
+}
+
+function loadPiezas() {
 
     piezasW = new THREE.Object3D();
     piezasB = new THREE.Object3D();
-    
+
     const glloader = new GLTFLoader();
 
     //carga de pawn
@@ -332,35 +362,24 @@ function loadScene() {
         piezasB.add(model);
     });
 
-    scene.add(piezasW);
-    scene.add(piezasB);
-
-    tabla = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 0.1, 1), materialTabla);
-    tabla.rotation.x = -Math.PI / 2;
-    tabla.receiveShadow = true;
-    scene.add(tabla);
-
-}
-
-function loadGUI() {
-    effectController = {
-        mensaje: 'controlador',
-        materialPieza: 'Phong',
-        texturaTabla: ''
-    }
-
-    const gui = new GUI();
-
-    const h = gui.addFolder('Materiales');
-    h.add(effectController, 'materialPieza', ['Phong', 'Lambert', 'Basic']).onChange(updateMaterial);
-}
-
-function loadPiezas() {
-
 }
 
 function updateMaterial() {
+    for (let i = 0; i < piezasW.children.length; i++) {
+        const piezaW = piezasW.children[i];
+        piezaW.traverse( function ( node ) {
+            if ( node.isMesh ) {
+                node.material = materialW[effectController.materialPieza];
+            }
+        })
 
+        const piezaB = piezasB.children[i];
+        piezaB.traverse( function ( node ) {
+            if ( node.isMesh ) {
+                node.material = materialB[effectController.materialPieza];
+            }
+        })
+    }
 }
 
 function update() {

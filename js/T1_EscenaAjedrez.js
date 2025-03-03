@@ -175,6 +175,7 @@ function loadTabla(partialPath) {
     tabla = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 0.1, 1), materialTabla);
     tabla.rotation.x = -Math.PI / 2;
     tabla.receiveShadow = true;
+    tabla.raycast = THREE.Mesh.prototype.raycast;
     scene.add(tabla);
 }
 
@@ -462,35 +463,57 @@ function click(event) {
     rayo.setFromCamera(new THREE.Vector2(x, y), camera);
     const intersectsW = rayo.intersectObjects(piezasW.children);
     const intersectsB = rayo.intersectObjects(piezasB.children);
+    const intersectsT = rayo.intersectObject(tabla);
 
-    if (intersectsW.length > 0 && selectedObject == undefined) {
-        selectedObject = intersectsW[0].object;
-        selectedObject = selectedObject.parent.parent.parent.parent.parent;
-        const pieza = scene.getObjectByName(selectedObject.name);
-        new TWEEN.Tween(pieza.position)
-        .to({y:[1, 1]}, 2000 )
-        .interpolation(TWEEN.Interpolation.CatmullRom)
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .start();
-    } else if (intersectsW.length > 0 && selectedObject != undefined) {
-        const pieza = scene.getObjectByName(selectedObject.name);
-        new TWEEN.Tween(pieza.position)
-        .to({y:[0.1, 0]}, 2000 )
-        .interpolation(TWEEN.Interpolation.CatmullRom)
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .start();
-        selectedObject = undefined;
-    }
+    if (selectedObject == undefined) {
+        if (intersectsW.length > 0) {
+            selectedObject = intersectsW[0].object;
+            selectedObject = selectedObject.parent.parent.parent.parent.parent;
+            const pieza = scene.getObjectByName(selectedObject.name);
+            new TWEEN.Tween(pieza.position)
+            .to({y:[1, 1]}, 2000 )
+            .interpolation(TWEEN.Interpolation.CatmullRom)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .start();
+        }
 
-    if (intersectsB.length > 0 && selectedObject == undefined) {
-        selectedObject = intersectsB[0].object;
-        selectedObject = selectedObject.parent.parent.parent.parent.parent;
-        const pieza = scene.getObjectByName(selectedObject.name);
-        new TWEEN.Tween(pieza.position)
-        .to({y:[1, 1]}, 2000 )
-        .interpolation(TWEEN.Interpolation.CatmullRom)
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .start();
+        if (intersectsB.length > 0) {
+            selectedObject = intersectsB[0].object;
+            selectedObject = selectedObject.parent.parent.parent.parent.parent;
+            const pieza = scene.getObjectByName(selectedObject.name);
+            new TWEEN.Tween(pieza.position)
+            .to({y:[1, 1]}, 2000 )
+            .interpolation(TWEEN.Interpolation.CatmullRom)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .start();
+        }
+
+    } else {
+        if (intersectsW.length > 0) {
+            const pieza = scene.getObjectByName(selectedObject.name);
+            new TWEEN.Tween(pieza.position)
+            .to({y:[0.1, 0]}, 2000 )
+            .interpolation(TWEEN.Interpolation.CatmullRom)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .start();
+            selectedObject = undefined;
+
+        } else if (intersectsB.length > 0) {
+            const pieza = scene.getObjectByName(selectedObject.name);
+            new TWEEN.Tween(pieza.position)
+            .to({y:[0.1, 0]}, 2000 )
+            .interpolation(TWEEN.Interpolation.CatmullRom)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .start();
+            selectedObject = undefined;
+
+        } else {
+            if (intersectsT.length > 0) {
+                // console.log("hello2");
+                let point = intersectsT[0].point;
+                // console.log("x: " + point.x + " y: " + point.y + " z: " + point.z);
+            }
+        }
     }
 }
 

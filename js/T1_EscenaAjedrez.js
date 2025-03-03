@@ -511,7 +511,13 @@ function click(event) {
             if (intersectsT.length > 0) {
                 // console.log("hello2");
                 let point = intersectsT[0].point;
-                // console.log("x: " + point.x + " y: " + point.y + " z: " + point.z);
+                const pieza = scene.getObjectByName(selectedObject.name);
+                new TWEEN.Tween(pieza.position)
+                .to({x:[point.x, point.x], y:[0.5, 0], z:[point.z, point.z]}, 2000 )
+                .interpolation(TWEEN.Interpolation.CatmullRom)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .start();
+                selectedObject = undefined;
             }
         }
     }

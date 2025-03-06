@@ -522,10 +522,19 @@ function click(event) {
             const pieza = scene.getObjectByName(selectedObject.name);
             secondObject = intersectsW[0].object.parent.parent.parent.parent.parent;
 
-            if( piezasW.children.includes(secondObject) ) {
+            if( piezasW.children.includes(pieza) ) {
+                new TWEEN.Tween(pieza.position)
+                .to({y:[0.1, 0]}, 2000 )
+                .interpolation(TWEEN.Interpolation.CatmullRom)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .start();
+                selectedObject = undefined;
+
+            } else {
                 let sx = secondObject.position.x + desplazamientosX[getPiezaName(selectedObject.name)] - desplazamientosX[getPiezaName(secondObject.name)];
-                let sz = secondObject.position.z;
-                console.log(sx + ' hello ' + sz);
+                let sz = (getPiezaName(selectedObject.name) === "knight_W") ? secondObject.position.z - 0.5 : secondObject.position.z;
+
+                if( getPiezaName(secondObject.name) === "knight_B" ) {sz = sz + 0.5;}
 
                 new TWEEN.Tween(pieza.position)
                 .to({x:[sx, sx], y:[0.1, 0], z:[sz, sz]}, 2000 )
@@ -538,24 +547,53 @@ function click(event) {
                 .interpolation(TWEEN.Interpolation.Bezier)
                 .easing(TWEEN.Easing.Quadratic.InOut)
                 .delay(500)
+                .onComplete(function() {
+                    piezasW.remove(secondObject);
+                })
                 .start();
-            } else {
+
+                selectedObject = undefined;
+            }
+
+        } else if (intersectsB.length > 0) {
+            const pieza = scene.getObjectByName(selectedObject.name);
+            secondObject = intersectsB[0].object.parent.parent.parent.parent.parent;
+
+            if( piezasB.children.includes(pieza) ) {
+
                 new TWEEN.Tween(pieza.position)
                 .to({y:[0.1, 0]}, 2000 )
                 .interpolation(TWEEN.Interpolation.CatmullRom)
                 .easing(TWEEN.Easing.Quadratic.InOut)
                 .start();
                 selectedObject = undefined;
-            }
 
-        } else if (intersectsB.length > 0) {
-            const pieza = scene.getObjectByName(selectedObject.name);
-            new TWEEN.Tween(pieza.position)
-            .to({y:[0.1, 0]}, 2000 )
-            .interpolation(TWEEN.Interpolation.CatmullRom)
-            .easing(TWEEN.Easing.Quadratic.InOut)
-            .start();
-            selectedObject = undefined;
+            } else {
+
+                let sx = secondObject.position.x + desplazamientosX[getPiezaName(selectedObject.name)] - desplazamientosX[getPiezaName(secondObject.name)];
+                let sz = (getPiezaName(selectedObject.name) === "knight_W") ? secondObject.position.z - 0.5 : secondObject.position.z;
+
+                if( getPiezaName(secondObject.name) === "knight_B" ) {sz = sz + 0.5;}
+
+                new TWEEN.Tween(pieza.position)
+                .to({x:[sx, sx], y:[0.1, 0], z:[sz, sz]}, 2000 )
+                .interpolation(TWEEN.Interpolation.CatmullRom)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .start();
+
+                new TWEEN.Tween(secondObject.position)
+                .to({x:[-5, -5], y:[2, 2], z:[-5,-5]}, 2000 )
+                .interpolation(TWEEN.Interpolation.Bezier)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .delay(500)
+                .onComplete(function() {
+                    piezasB.remove(secondObject);
+                })
+                .start();
+
+                selectedObject = undefined;
+
+            }
 
         } else {
             if (intersectsT.length > 0) {

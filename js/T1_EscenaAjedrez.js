@@ -89,11 +89,11 @@ function init() {
     const ambiental = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambiental);
     const directional1 = new THREE.DirectionalLight(0xffffff, 1);
-    directional1.position.set(-3, 5, -3);
+    directional1.position.set(-1, 3, -6);
     directional1.castShadow = true;
     scene.add(directional1);
     const directional2 = new THREE.DirectionalLight(0xffffff, 1);
-    directional2.position.set(3, 5, 3);
+    directional2.position.set(1, 3, 6);
     directional2.castShadow = true;
     scene.add(directional2);
     // scene.add(new THREE.CameraHelper(directional1.shadow.camera));
@@ -134,7 +134,7 @@ function loadGUI() {
     const gui = new GUI();
 
     const h = gui.addFolder('Materiales');
-    h.add(effectController, 'materialPieza', ['Phong', 'Madera', 'Metal']).name('Material Pieza').onChange(updatePiezaMaterial);
+    h.add(effectController, 'materialPieza', ['Phong', 'Marmol', 'Uni']).name('Material Pieza').onChange(updatePiezaMaterial);
     h.add(effectController, 'texturaTabla', ['Normal', 'Marmol', 'Madera']).name('Textura Tabla').onChange(updateTablaMaterial);
     h.add(effectController, 'entorno', ['Beach', 'Golden Bridge', 'Heroes Square', 'Lycksele', 'San Francisco']).name('Entorno').onChange(updateHabitacion);
 }
@@ -148,27 +148,29 @@ function loadMateriales() {
         path+ 'beach/posz.jpg', path+ 'beach/negz.jpg'];
 
     const texturaEntorno = new THREE.CubeTextureLoader().load(entorno);
-    const texturaMadera = new THREE.TextureLoader().load(path + 'wood512.jpg');
-    const texturaMetalica = new THREE.TextureLoader().load(path + 'metal_128.jpg');
+    const texturaMaderaW = new THREE.TextureLoader().load(path + 'marmolW.jpg');
+    const texturaMaderaB = new THREE.TextureLoader().load(path + 'marmolB.jpg');
 
-    
+    const texturaUniB = new THREE.TextureLoader().load(path + 'uniW.jpg');
+    const texturaUniW = new THREE.TextureLoader().load(path + 'uniB.jpg');
+
     const materialPiezaW = new THREE.MeshPhongMaterial({color: 'white', specular: 'gray', shininess: 100, envMap: texturaEntorno});
     const materialPiezaB= new THREE.MeshPhongMaterial({color: 'black', specular: 'gray', shininess: 100, envMap: texturaEntorno});
-    const materialMaderaW = new THREE.MeshBasicMaterial({map: texturaMadera});
-    const materialMaderaB = new THREE.MeshBasicMaterial({map: texturaMadera, color: 0x222222});
-    const materialMetalicaW = new THREE.MeshBasicMaterial({map: texturaMetalica});
-    const materialMetalicaB = new THREE.MeshBasicMaterial({map: texturaMetalica, color: 0x222222});
+    const materialMaderaW = new THREE.MeshBasicMaterial({map: texturaMaderaW});
+    const materialMaderaB = new THREE.MeshBasicMaterial({map: texturaMaderaB});
+    const materialMetalicaW = new THREE.MeshBasicMaterial({map: texturaUniW});
+    const materialMetalicaB = new THREE.MeshBasicMaterial({map: texturaUniB});
 
     materialW = {
         'Phong' : materialPiezaW,
-        'Madera': materialMaderaW,
-        'Metal': materialMetalicaW
+        'Marmol': materialMaderaW,
+        'Uni': materialMetalicaW
     }
 
     materialB = {
         'Phong' : materialPiezaB,
-        'Madera': materialMaderaB,
-        'Metal': materialMetalicaB
+        'Marmol': materialMaderaB,
+        'Uni': materialMetalicaB
     }
 
 }

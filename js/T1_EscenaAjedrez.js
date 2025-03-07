@@ -556,9 +556,9 @@ function click(event) {
 
             } else {
                 let sx = secondObject.position.x + desplazamientosX[getPiezaName(selectedObject.name)] - desplazamientosX[getPiezaName(secondObject.name)];
-                let sz = (getPiezaName(selectedObject.name) === "knight_W") ? secondObject.position.z - 0.5 : secondObject.position.z;
+                let sz = (getPiezaName(selectedObject.name) === "knight_B") ? secondObject.position.z - 0.5 : secondObject.position.z;
 
-                if( getPiezaName(secondObject.name) === "knight_B" ) {sz = sz + 0.5;}
+                if( getPiezaName(secondObject.name) === "knight_W" ) {sz = sz + 0.5;}
 
                 new TWEEN.Tween(pieza.position)
                 .to({x:[sx, sx], y:[0.1, 0], z:[sz, sz]}, 2000 )

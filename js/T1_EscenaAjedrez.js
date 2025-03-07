@@ -434,8 +434,11 @@ function updatePiezaMaterial() {
                 node.material = materialW[effectController.materialPieza];
             }
         });
+    }
 
-        const piezaB = piezasB.children[i];
+
+    for (let i = 0; i < piezasB.children.length; i++) {
+    const piezaB = piezasB.children[i];
         piezaB.traverse( function ( node ) {
             if ( node.isMesh ) {
                 node.material = materialB[effectController.materialPieza];

@@ -92,11 +92,11 @@ function init() {
     const ambiental = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambiental);
     const directional1 = new THREE.DirectionalLight(0xffffff, 1);
-    directional1.position.set(-1, 3, -6);
+    directional1.position.set(0, 3, -6);
     directional1.castShadow = true;
     scene.add(directional1);
     const directional2 = new THREE.DirectionalLight(0xffffff, 1);
-    directional2.position.set(1, 3, 6);
+    directional2.position.set(0, 3, 6);
     directional2.castShadow = true;
     scene.add(directional2);
     // scene.add(new THREE.CameraHelper(directional1.shadow.camera));
@@ -174,7 +174,7 @@ function loadMateriales() {
     const texturaUniW = new THREE.TextureLoader().load(path + 'uniB.jpg');
 
     const materialPiezaW = new THREE.MeshPhongMaterial({color: 'white', specular: 'gray', shininess: 100, envMap: texturaEntorno});
-    const materialPiezaB= new THREE.MeshPhongMaterial({color: 'black', specular: 'gray', shininess: 100, envMap: texturaEntorno});
+    const materialPiezaB= new THREE.MeshPhongMaterial({color: 0x292727, specular: 'gray', shininess: 100, envMap: texturaEntorno});
     const materialMaderaW = new THREE.MeshBasicMaterial({map: texturaMaderaW});
     const materialMaderaB = new THREE.MeshBasicMaterial({map: texturaMaderaB});
     const materialMetalicaW = new THREE.MeshBasicMaterial({map: texturaUniW});

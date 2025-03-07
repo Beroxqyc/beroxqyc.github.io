@@ -7,6 +7,7 @@
  * 
  * fuentes:
  * Texturas Cúbicas: www.humus.name 
+ * video tutorial: https://www.youtube.com/watch?v=G7iGNPzaQIY by wikiHow
  * 
  */
 
@@ -63,6 +64,8 @@ let desplazamientosZ = {
     'king_W': 0,
     'king_B': 0
 }
+let video, suelo;
+let videoExisted = false;
 
 init();
 loadScene();
@@ -128,7 +131,18 @@ function loadGUI() {
         mensaje: 'controlador',
         materialPieza: 'Phong',
         texturaTabla: 'Normal',
-        entorno: 'Beach'
+        entorno: 'Beach',
+        play: function() {videoExisted ? video.play() : createVideo();},
+        pause: function( ) { if (videoExisted) {video.pause(); }},
+        replay: function( ) { if (videoExisted) {video.currentTime = 0; video.play();}},
+        volver: function( ) {
+            if (videoExisted) {
+                video.pause();
+                scene.remove(suelo);
+                video = undefined;
+                videoExisted = false;
+            }
+        },
     }
 
     const gui = new GUI();
@@ -137,6 +151,11 @@ function loadGUI() {
     h.add(effectController, 'materialPieza', ['Phong', 'Marmol', 'Uni']).name('Material Pieza').onChange(updatePiezaMaterial);
     h.add(effectController, 'texturaTabla', ['Normal', 'Marmol', 'Madera']).name('Textura Tabla').onChange(updateTablaMaterial);
     h.add(effectController, 'entorno', ['Beach', 'Golden Bridge', 'Heroes Square', 'Lycksele', 'San Francisco']).name('Entorno').onChange(updateHabitacion);
+    const v = gui.addFolder('Video Tutorial');
+    v.add(effectController, 'play');
+    v.add(effectController, 'pause');
+    v.add(effectController, 'replay');
+    v.add(effectController, 'volver').name('Volver al Juego');
 }
 
 function loadMateriales() {
@@ -644,4 +663,17 @@ function getPiezaName(name) {
         return name.substring(0, index + 2);
     }
     return name;
+}
+
+function createVideo() {
+    video = document.createElement('video');
+    video.src = 'videos/tutorialAjedrez.mp4';
+    video.load();
+    const texturaVideo =  new THREE.VideoTexture(video);
+    suelo = new THREE.Mesh(new THREE.PlaneGeometry(8,4), new THREE.MeshBasicMaterial({map: texturaVideo}));
+    suelo.rotation.x = -Math.PI / 2;
+    suelo.position.y = 0.1;
+    video.play();
+    videoExisted = true;
+    scene.add(suelo);
 }
